@@ -2,9 +2,13 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'user.dart';
 
+int currentPage = 0;
+final int pageSize = 20;
+
 class UserService {
   Future<List<User>> fetchUsers() async {
-    final response = await http.get(Uri.parse('https://randomuser.me/api/?results=20&nat=us'));
+    currentPage++;
+    final response = await http.get(Uri.parse('https://randomuser.me/api/?results=$pageSize&page=$currentPage&nat=us'));
 
     if (response.statusCode == 200) {
       List<User> users = [];
