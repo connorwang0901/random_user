@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import './model/user_service.dart';
-import './model/user.dart';
+import 'package:random_user/view/UserProfileScreen.dart';
+import 'controller/user.dart';
+import 'controller/user_service.dart';
 
 void main() {
   runApp(MyApp());
@@ -27,8 +28,11 @@ class UserListScreen extends StatefulWidget {
 class _UserListScreenState extends State<UserListScreen> {
   final UserService userService = UserService();
   List<User> userList = [];
+  List<User> curUserList = [];
   bool isLoadingMore = false;
+  bool isIncrease = true;
   ScrollController scrollController = ScrollController();
+  TextEditingController emailController = TextEditingController();
 
   @override
   void initState() {
@@ -41,6 +45,7 @@ class _UserListScreenState extends State<UserListScreen> {
     List<User> initialUsers = await userService.fetchUsers();
     setState(() {
       userList = initialUsers;
+      curUserList = userList;
     });
   }
 
@@ -54,6 +59,7 @@ class _UserListScreenState extends State<UserListScreen> {
       List<User> moreUsers = await userService.fetchUsers();
       setState(() {
         userList.addAll(moreUsers);
+        curUserList.addAll(moreUsers);
       });
     } catch (e) {
     } finally {
@@ -63,10 +69,10 @@ class _UserListScreenState extends State<UserListScreen> {
     }
   }
 
-  Future<void> _refreshUsers() async {
+  Future<void> refreshUsers() async {
     setState(() {
-      currentPage = 0;
       userList.clear();
+      curUserList.clear();
     });
     await loadInitialUsers();
   }
@@ -79,34 +85,97 @@ class _UserListScreenState extends State<UserListScreen> {
     }
   }
 
+  void sortUsersByName() {
+    setState(() {
+      isIncrease = !isIncrease;
+      isIncrease
+          ? userList.sort((a, b) => a.name.compareTo(b.name))
+          : userList.sort((a, b) => b.name.compareTo(a.name));
+    });
+  }
+
+  void searchByEmail() {
+    String searchEmail = emailController.text.toLowerCase();
+    setState(() {
+      userList = curUserList;
+      userList = userList
+          .where((user) => user.email.toLowerCase().contains(searchEmail))
+          .toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('User List'),
-        ),
-        body: RefreshIndicator(
-            onRefresh: _refreshUsers,
-            child: ListView.builder(
-              controller: scrollController,
-              itemCount: userList.length + (isLoadingMore ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index >= userList.length) {
-                  return isLoadingMore
-                      ? Center(child: CircularProgressIndicator())
-                      : Container();
-                }
-                User user = userList[index];
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: NetworkImage(user.avatarUrl),
+      appBar: AppBar(
+        title: const Text('User List'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.sort_by_alpha),
+            onPressed: sortUsersByName,
+          ),
+        ],
+      ),
+      body: Column(
+        children: <Widget>[
+          SizedBox(width: 20),
+          Row(
+            children: [
+              const SizedBox(width: 20),
+              Expanded(
+                child: TextField(
+                  controller: emailController,
+                  decoration: const InputDecoration(
+                    labelText: 'Search by Email',
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue),
+                    ),
                   ),
-                  title: Text(user.name),
-                  subtitle: Text(user.email),
-                );
-              },
-            )
-        )
+                  style: TextStyle(fontSize: 14),
+                ),
+              ),
+              const SizedBox(width: 20),
+              ElevatedButton(
+                onPressed: searchByEmail,
+                child: Text('Submit'),
+              ),
+              const SizedBox(width: 20),
+            ],
+          ),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: refreshUsers,
+              child: ListView.builder(
+                controller: scrollController,
+                itemCount: userList.length + (isLoadingMore ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index >= curUserList.length) {
+                    return isLoadingMore
+                        ? const Center(child: CircularProgressIndicator())
+                        : Container();
+                  }
+                  User user = userList[index];
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(user.avatarUrl),
+                    ),
+                    title: Text(user.name),
+                    subtitle: Text(user.email),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                UserProfileScreen(user: user)),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
