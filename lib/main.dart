@@ -38,7 +38,7 @@ class _UserListScreenState extends State<UserListScreen> {
   void initState() {
     super.initState();
     loadInitialUsers();
-    scrollController.addListener(_onScroll);
+    scrollController.addListener(onScroll);
   }
 
   Future<void> loadInitialUsers() async {
@@ -77,7 +77,7 @@ class _UserListScreenState extends State<UserListScreen> {
     await loadInitialUsers();
   }
 
-  void _onScroll() {
+  void onScroll() {
     if (scrollController.position.pixels >=
             scrollController.position.maxScrollExtent &&
         !isLoadingMore) {
