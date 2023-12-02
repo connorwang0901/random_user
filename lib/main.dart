@@ -50,6 +50,8 @@ class _UserListScreenState extends State<UserListScreen> {
           MySearchBar(
             controller: _userController.emailController,
             onSearch: _userController.searchByEmail,
+            isIncrease:_userController.isIncrease,
+            onSort: _userController.sortUsersByName,
           ),
           Expanded(
             child: RefreshIndicator(

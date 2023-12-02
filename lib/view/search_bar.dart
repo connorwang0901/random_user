@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 class MySearchBar extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onSearch;
+  final VoidCallback onSort;
+  bool isIncrease;
 
-  const MySearchBar({
+  MySearchBar({
     Key? key,
     required this.controller,
     required this.onSearch,
+    required this.isIncrease,
+    required this.onSort,
   }) : super(key: key);
 
   @override
@@ -31,6 +35,11 @@ class MySearchBar extends StatelessWidget {
         ElevatedButton(
           onPressed: onSearch,
           child: const Text('Search'),
+        ),
+        const SizedBox(width: 20),
+        ElevatedButton(
+          onPressed: onSort,
+            child: Text(isIncrease ? 'A-Z': 'Z-A')
         ),
         const SizedBox(width: 20),
       ],

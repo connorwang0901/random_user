@@ -9,7 +9,6 @@ class UserController {
   ScrollController scrollController = ScrollController();
   TextEditingController emailController = TextEditingController();
 
-
   List<User> userList = [];
   List<User> curUserList = [];
   bool isLoadingMore = false;
