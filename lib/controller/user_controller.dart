@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-
 import '../model/user_service.dart';
 import '../model/user.dart';
 
@@ -10,14 +9,13 @@ class UserController {
   TextEditingController emailController = TextEditingController();
 
   List<User> userList = [];
-  List<User> curUserList = [];
+  List<User> completeUserList = [];
   bool isLoadingMore = false;
   bool isIncrease = true;
 
   VoidCallback? onListenersUpdated;
 
   UserController() {
-    loadInitialUsers();
     scrollController.addListener(onScroll);
   }
 
@@ -30,7 +28,7 @@ class UserController {
   Future<void> loadInitialUsers() async {
     List<User> initialUsers = await userService.fetchUsers();
     userList = initialUsers;
-    curUserList = userList;
+    completeUserList = userList;
     notifyListeners();
   }
 
@@ -41,10 +39,21 @@ class UserController {
 
     try {
       List<User> moreUsers = await userService.fetchUsers();
-      userList.addAll(moreUsers);
-      curUserList.addAll(moreUsers);
-      notifyListeners();
+      
+      for (User newUser in moreUsers) {
+        if (!completeUserList.any((user) => user.id == newUser.id)) {
+            completeUserList.add(newUser);
+        }
+
+        if (!userList.any((user) => user.id == newUser.id)) {
+            userList.add(newUser);
+        }
+
+        notifyListeners();
+      }
+
     } catch (e) {
+      throw Exception(e);
     } finally {
         isLoadingMore = false;
         notifyListeners();
@@ -53,7 +62,7 @@ class UserController {
 
   Future<void> refreshUsers() async {
     userList.clear();
-    curUserList.clear();
+    completeUserList.clear();
     notifyListeners();
     await loadInitialUsers();
   }
@@ -76,7 +85,7 @@ class UserController {
 
   void searchByEmail() {
     String searchEmail = emailController.text.toLowerCase();
-    userList = curUserList;
+    userList = completeUserList;
     userList = userList
         .where((user) => user.email.toLowerCase().contains(searchEmail))
         .toList();
@@ -84,3 +93,4 @@ class UserController {
   }
 
 }
+

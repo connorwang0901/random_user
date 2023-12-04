@@ -16,9 +16,12 @@ class UserProfileScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            CircleAvatar(
-              radius: 60,
-              backgroundImage: NetworkImage(user.avatarUrl),
+            Hero(
+              tag: 'user-${user.id}',
+              child: CircleAvatar(
+                radius: 60,
+                backgroundImage: NetworkImage(user.avatarUrl),
+              ),
             ),
             const SizedBox(height: 30),
             Text("Name: ${user.name}"),

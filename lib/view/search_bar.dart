@@ -16,33 +16,50 @@ class MySearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const SizedBox(width: 20),
-        Expanded(
-          child: TextField(
-            controller: controller,
-            decoration: const InputDecoration(
-              labelText: 'Search by Email',
-              border: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.blue),
+    return Card(
+      elevation: 5,
+      shadowColor: Colors.white,
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 5, bottom: 5),
+        child: Row(
+          children: [
+            const SizedBox(width: 10),
+            Expanded(
+              child: TextField(
+                controller: controller,
+                cursorColor: Colors.black,
+                decoration: const InputDecoration(
+                  labelText: 'Search by Email',
+                  labelStyle: TextStyle(color: Colors.black),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black, style: BorderStyle.none),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white60,
+                ),
+                style: const TextStyle(fontSize: 14, color: Colors.black),
               ),
             ),
-            style: const TextStyle(fontSize: 14),
-          ),
+            const SizedBox(width: 10),
+            ElevatedButton(
+              onPressed: onSearch,
+              style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll(Colors.black)),
+              child: const Icon(Icons.search, color: Colors.white,),
+            ),
+            const SizedBox(width: 10),
+            ElevatedButton(
+                onPressed: onSort,
+                style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll(Colors.black)),
+                child: Text(isIncrease ? 'A-Z ↑' : 'Z-A ↓',
+                    style: const TextStyle(color: Colors.white))),
+            const SizedBox(width: 10),
+          ],
         ),
-        const SizedBox(width: 20),
-        ElevatedButton(
-          onPressed: onSearch,
-          child: const Text('Search'),
-        ),
-        const SizedBox(width: 20),
-        ElevatedButton(
-          onPressed: onSort,
-            child: Text(isIncrease ? 'A-Z': 'Z-A')
-        ),
-        const SizedBox(width: 20),
-      ],
+      ),
     );
   }
 }

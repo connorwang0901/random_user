@@ -4,30 +4,30 @@ import 'package:random_user/view/search_bar.dart';
 import 'package:random_user/view/user_profile_screen.dart';
 import 'controller/user_controller.dart';
 
-
 void main() {
-  runApp(MyApp());
+  runApp(UpduoApp());
 }
 
-class MyApp extends StatelessWidget {
+class UpduoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'User List',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: UserListScreen(),
+      title: 'Contacts',
+      theme: ThemeData.dark(),
+      debugShowCheckedModeBanner: false,
+      home: const _MainScreen(),
     );
   }
 }
 
-class UserListScreen extends StatefulWidget {
+class _MainScreen extends StatefulWidget {
+  const _MainScreen({super.key});
+
   @override
-  _UserListScreenState createState() => _UserListScreenState();
+  _MainScreenState createState() => _MainScreenState();
 }
 
-class _UserListScreenState extends State<UserListScreen> {
+class _MainScreenState extends State<_MainScreen> {
   final UserController _userController = UserController();
 
   @override
@@ -43,32 +43,31 @@ class _UserListScreenState extends State<UserListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('User List'),
+          title: const Text('Contacts'),
+          backgroundColor: Colors.purple[900],
         ),
         body: Column(children: <Widget>[
-          SizedBox(width: 30),
+          const SizedBox(width: 10),
           MySearchBar(
             controller: _userController.emailController,
             onSearch: _userController.searchByEmail,
-            isIncrease:_userController.isIncrease,
+            isIncrease: _userController.isIncrease,
             onSort: _userController.sortUsersByName,
           ),
           Expanded(
-            child: RefreshIndicator(
-              onRefresh: _userController.refreshUsers,
-              child: UserListView(
-                  users: _userController.userList,
-                  scrollController: _userController.scrollController,
-                  isLoadingMore: _userController.isLoadingMore,
-                  onUserTap: (user) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UserProfileScreen(user: user),
-                      ),
-                    );
-                  }),
-            ),
+            child: UserListView(
+                onRefresh: _userController.refreshUsers,
+                users: _userController.userList,
+                scrollController: _userController.scrollController,
+                isLoadingMore: _userController.isLoadingMore,
+                onUserTap: (user) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserProfileScreen(user: user),
+                    ),
+                  );
+                }),
           ),
         ]));
   }

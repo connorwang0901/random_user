@@ -5,11 +5,10 @@ class User {
 
   User({required this.name, required this.email, required this.avatarUrl});
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      name: json['name']['first'] + " " + json['name']['last'],
-      email: json['email'],
-      avatarUrl: json['picture']['thumbnail'],
-    );
-  }
+  User.fromJson(Map<String, dynamic> json)
+      :name = json['name']['first'] + " " + json['name']['last'],
+      email = json['email'],
+      avatarUrl = json['picture']['thumbnail'];
+
+  get id => name;
 }
